@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <style type="text/css">
+        	.box{
+        		margin: 0 auto;
+        		text-align: center;
+        	}
+        	#cell{
+        		border: 1px solid lightcoral;
+        		border-width: 0 1px 1px 0;
+        	}
+        	
+        </style>
+    </head>
+    <body>
+        
+        <div class="box">
+	        <canvas id="cell"  width="400" height="400" style="background-color:lightgray ;"></canvas>
+        </div>
+        
+        <script type="text/javascript">
+            var cell = document.getElementById("cell");
+            var ctx = cell.getContext("2d");
+			var cellSize = 400;
+//			var cell.width = cellSize;
+//			var cell.height = cellSize;
+            var endX = cell.width;
+            var endY = cell.height;
+            var startX = 0;
+            var startY = 0;
+            var cellsize = 20;
+			var dir = 0;
+            	ctx.strokeStyle = "lightcoral";
+				ctx.fillStyle = "cornflowerblue";
+				for(var i=0,l=endY/cellsize;i<l;i++){
+	            	ctx.beginPath();
+					ctx.moveTo(0,i*cellsize+.5);
+					ctx.lineTo(endX,i*cellsize+.5);
+					ctx.stroke();
+				 }
+				for(var i=0,l=endX/cellsize;i<l;i++){
+	            	ctx.beginPath();
+					ctx.moveTo(i*cellsize+.5,0);
+					ctx.lineTo(i*cellsize+.5,endY);
+					ctx.stroke();
+				 }
+				
+				//设置起始位置;
+				var x = 0;
+				var y = 0;
+				//设置
+				var boxPosition = {
+					x:[],
+					y:[]
+				}
+				var foodPosition = {
+					x:1,
+					y:1
+				}
+				var a = 0;
+				var boxlength = 100;
+				makebox();
+				
+				setInterval(function(){
+					for(var i=0,l=boxPosition.x.length;i<l;i++){
+						if(x==boxPosition.x[i]&&y==boxPosition.y[i]){
+							alert("you loser!!!");
+						};
+					};
+					
+						
+				},10)
+				function makebox(){
+						//擦除走过的痕迹,a决定从第几个擦起
+						ctx.clearRect(boxPosition.x[a],boxPosition.y[a],cellsize-1,cellsize-1);
+						//决定贪吃蛇的最大长度,以及保留的路径,超出部分将删除
+						if(boxPosition.x.length==boxlength){
+							boxPosition.x.pop();
+						}
+						//将走过的路径记录进数组
+						boxPosition.x.unshift(x*cellsize+1);
+						if(boxPosition.y.length==boxlength){
+							boxPosition.y.pop();
+						}
+						boxPosition.y.unshift(y*cellsize+1);
+						//绘制蛇头.
+						ctx.beginPath();
+						ctx.fillRect(x*cellsize+1,y*cellsize+1,cellsize-1,cellsize-1);
+						//如果蛇头与食物重叠,新建食物,并且擦除部分减1.
+						if(x==foodPosition.x&&y==foodPosition.y){
+							a++;
+							makefood();
+						}
+
+				};
+				function makefood(){
+					var fx = Math.round(Math.random()*(endX/cellsize-1));
+					var fy = Math.round(Math.random()*(endY/cellsize-1));
+					foodPosition.x=fx;
+					foodPosition.y=fy;
+					ctx.fillRect(fx*cellsize+1,fy*cellsize+1,cellsize-1,cellsize-1);
+//					console.log(foodPosition.x+","+foodPosition.y)
+				}
+			
+				
+				makefood();
+				window.onkeydown = function(ev){
+					dir = ev.keyCode;
+				}
+				timer = setInterval(function(){
+					 if(dir==32){
+							dir = 0;
+					 }else if(dir==39 && x<endX/cellsize-1){
+						x++;
+						makebox();
+					}else if(dir==37 && x>0){
+						x--;
+						makebox();
+					}else if(dir==38 && y>0){
+						y--;
+						makebox();
+					}else if(dir==40 && y<endY/cellsize-1){
+						y++;
+						makebox();
+					}
+					
+				},100)
+        </script>
+</body>
+</html>
